@@ -1,13 +1,17 @@
+# app.py
 import streamlit as st
 import joblib
 import numpy as np
 
+# Set this first — before any other Streamlit commands
+st.set_page_config(page_title="Lung Cancer Prediction", layout="centered")
+
+# Now the rest
 st.write("✅ Streamlit app is running.")
 
 # Load the model and label encoder
 model, le_gender = joblib.load("cancer_model.pkl")
 
-st.set_page_config(page_title="Lung Cancer Prediction", layout="centered")
 st.title("🩺 Lung Cancer Risk Predictor")
 st.write("Fill in the details below to check your risk of developing lung cancer.")
 
@@ -47,17 +51,18 @@ features = np.array([[
     coughing == "Yes",
     short_breath == "Yes",
     swallow_diff == "Yes",
-    chest_pain == "Yes",
+    chest_pain == "Yes"
 ]])
 
 # Prediction logic
 if st.button("Predict"):
-    probability = model.predict_proba(features)[0][1]  # Class 1 = Lung Cancer
+    probability = model.predict_proba(features)[0][1]
     percentage = round(probability * 100, 2)
 
+    st.write("### Prediction Result:")
+    st.write(f"**Predicted Probability of Lung Cancer:** `{percentage}%`")
+    
     if percentage >= 50:
-        st.subheader("🛑 High Risk of Lung Cancer")
+        st.markdown("#### 🛑 High Risk of Lung Cancer")
     else:
-        st.subheader("✅ Low Risk of Lung Cancer")
-
-    st.metric(label="Predicted Risk", value=f"{percentage}%", delta=None)
+        st.markdown("#### ✅ Low Risk of Lung Cancer")
